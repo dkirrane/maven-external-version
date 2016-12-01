@@ -19,10 +19,22 @@ package org.apache.maven.version;
  * under the License.
  */
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.ArtifactUtils;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -42,16 +54,6 @@ import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * Maven Extension that will update all the projects in the reactor with an externally managed version.
@@ -213,6 +215,20 @@ public class ExternalVersionExtension
                 {
                     model.getParent().setVersion( newVersionForParent );
                 }
+            }
+
+            List<Dependency> newDependencies = new ArrayList<Dependency>();
+            if(null != model.getDependencies()){
+                List<Dependency> dependencies = model.getDependencies();
+                for (Dependency dependency : dependencies) {
+                    String groupId = dependency.getGroupId();
+                    String artifactId = dependency.getArtifactId();
+                    String version = dependency.getVersion();
+                    System.out.println("Dependency version " + groupId + ':' + artifactId + ':' + version);
+                    dependency.setVersion("fooBar");
+                    newDependencies.add(dependency);
+                }
+                model.setDependencies(newDependencies);
             }
             
             Plugin plugin = mavenProject.getPlugin( "org.apache.maven.plugins:maven-external-version-plugin" );

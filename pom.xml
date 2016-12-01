@@ -62,16 +62,17 @@
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
-
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>    
                     <executions>
-                        <execution>
+                        <execution>                            
                             <id>rat-check</id>
                             <goals>
                                 <goal>check</goal>
                             </goals>
                             <configuration>
                                 <excludes>
-                                    <exclude>.checkstyle</exclude>
                                     <exclude>DEPENDENCIES</exclude>
                                     <exclude>**/src/it/**</exclude>
                                     <exclude>README.md</exclude>
@@ -79,6 +80,13 @@
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>  
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>                                      
                 </plugin>
             </plugins>
         <!--</pluginManagement>-->
